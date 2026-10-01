@@ -265,7 +265,7 @@ const SCREENS = [
 const CONFIG = {
   ENDPOINT: "https://script.google.com/macros/s/AKfycbyrDGPE3QVhmQOgmfFdLq0Ge5a_HotcXAeCQJGZJ_oMvLP9vUw07LeC7n8IWhzlJq8/exec",
   SECRET:   "BELGIUM2026",
-  VERSION:  "web-B-1.0"
+  VERSION:  "web-B-1.1"
 };
 /* On claude.ai the page runs in review mode: no network call is made,
    and no response is recorded. On your own hosting it posts to ENDPOINT. */
@@ -274,9 +274,14 @@ const PREVIEW = /(^|\.)claude\.ai$/.test(location.hostname)
 
 /* ===================== STATE ===================== */
 let lang = null, step = -1, minStep = 0, submitted = false;
+let suspect = '';                   // '', 'fast', 'hp' or 'hp+fast'
 const A = {};                       // answers
 const started = new Date().toISOString();
 const startedMs = Date.now();
+/* One random ID per pass. A response that failed to send and was saved as a
+   file carries the same ID, so you can spot it if it also reached the sheet. */
+const rid = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+          : Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 const app = document.getElementById('app');
 const bar = document.getElementById('bar');
 const L = (o)=> o && (o[lang] || o.ru || '');
@@ -318,7 +323,7 @@ function renderLang(){
     box.append(b);
   });
   app.append(box);
-  const n = el('p','~12 min · анонимно · анонимді · anonymous'); n.className='small'; n.style.marginTop='18px';
+  const n = el('p','~8 min · анонимно · анонимді · anonymous'); n.className='small'; n.style.marginTop='18px';
   app.append(n);
 }
 
@@ -344,7 +349,7 @@ function renderScreen(sc){
 
 function qcard(q){
   const c = el('div'); c.className='card';
-  const n = el('div', q.id.replace(/^q/,'').replace('_','.')); n.className='qnum';
+  const n = el('div', q.id.replace(/^b/,'')); n.className='qnum';
   const t = el('div', L(q.t)); t.className='qtext';
   c.append(n,t);
   if(q.hint){ const h=el('div',L(q.hint)); h.className='hint'; c.append(h); }
@@ -508,6 +513,7 @@ function payload(){
       elapsed_s: Math.round((Date.now()-startedMs)/1000),
       ua_lang:(navigator.language||''),
       screen_w: window.innerWidth,
+      suspect, rid,
       instrument:"B", version:CONFIG.VERSION
     },
     row: flatten()
@@ -517,10 +523,14 @@ function payload(){
 async function submit(btn){
   btn.disabled=true; btn.textContent=L(T.sending);
 
-  /* honeypot: filled means a bot; elapsed guard: under 45s means not a real pass */
+  /* Quality flags. The response is still sent; it is marked, not dropped.
+     hp   = the hidden honeypot field was filled (a bot, or browser autofill)
+     fast = the pass took under 45 seconds                                   */
   const hp = document.getElementById('hp-field');
-  const tooFast = (Date.now()-startedMs) < 45000;
-  if((hp && hp.value) || tooFast){ submitted = PREVIEW; step=SCREENS.length+1; render(); return; }
+  const flags = [];
+  if(hp && hp.value) flags.push('hp');
+  if((Date.now()-startedMs) < 45000) flags.push('fast');
+  suspect = flags.join('+');
 
   if(PREVIEW){ submitted = true; step=SCREENS.length+1; render(); return; }
 
