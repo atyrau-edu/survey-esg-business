@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ЕО / ЕС — сауалнама · опрос</title>
+<style>
+:root{
+  --bg:#f6f5f2; --panel:#ffffff; --ink:#1b1c1e; --muted:#5f636a;
+  --line:#dcdad4; --accent:#1c4f8c; --accent-soft:#e8eef7;
+  --warn:#7b4b1e; --ok:#1f6b4a; --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16181b; --panel:#1e2125; --ink:#e9e8e4; --muted:#a2a7ae;
+    --line:#333840; --accent:#7fa9de; --accent-soft:#232b36;
+    --warn:#d3a373; --ok:#7ec8a2;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16181b; --panel:#1e2125; --ink:#e9e8e4; --muted:#a2a7ae;
+  --line:#333840; --accent:#7fa9de; --accent-soft:#232b36;
+  --warn:#d3a373; --ok:#7ec8a2;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Arial,sans-serif;
+  font-size:16px; line-height:1.5;
+}
+.wrap{max-width:760px; margin:0 auto; padding:20px 16px 72px}
+header.bar{
+  position:sticky; top:0; z-index:5; background:var(--bg);
+  border-bottom:1px solid var(--line); padding:10px 0 8px; margin-bottom:18px;
+}
+.barin{max-width:760px; margin:0 auto; padding:0 16px; display:flex; align-items:center; gap:12px}
+.org{font-size:12px; color:var(--muted); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.progwrap{height:4px; background:var(--line); border-radius:2px; overflow:hidden; margin-top:8px}
+.prog{height:100%; width:0; background:var(--accent); transition:width .25s ease}
+h1{font-size:23px; line-height:1.28; margin:0 0 10px; font-weight:650}
+h2{font-size:17px; margin:26px 0 4px; font-weight:650; color:var(--accent)}
+p{margin:0 0 12px}
+.lead{color:var(--muted); font-size:14.5px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 6px; margin-bottom:14px}
+.qnum{font-variant-numeric:tabular-nums; color:var(--muted); font-size:13px; letter-spacing:.02em}
+.qtext{font-weight:600; margin:2px 0 10px}
+.hint{font-size:13.5px; color:var(--muted); margin:-4px 0 10px}
+label.opt{
+  display:flex; gap:10px; align-items:flex-start; padding:9px 10px; margin:0 0 6px;
+  border:1px solid var(--line); border-radius:8px; cursor:pointer; background:transparent;
+}
+label.opt:hover{background:var(--accent-soft)}
+label.opt input{margin-top:3px; flex:none; accent-color:var(--accent)}
+label.opt.sel{border-color:var(--accent); background:var(--accent-soft)}
+.scale{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px}
+.scale button{
+  flex:1 1 52px; min-width:52px; padding:11px 4px; font-size:15px; font-weight:600;
+  border:1px solid var(--line); border-radius:8px; background:transparent; color:var(--ink); cursor:pointer;
+}
+.scale button.sel{background:var(--accent); border-color:var(--accent); color:#fff}
+.scale button.dk{flex:1 1 100%; font-weight:500; font-size:13.5px; color:var(--muted)}
+.scale button.dk.sel{color:#fff}
+.ends{display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); margin:-2px 0 12px; gap:10px}
+.grid-row{border:1px solid var(--line); border-radius:8px; padding:10px; margin-bottom:8px}
+.grid-row .lbl{font-size:15px; margin-bottom:8px}
+.grid-opts{display:flex; gap:6px; flex-wrap:wrap}
+.grid-opts button{
+  flex:1 1 30%; min-width:92px; padding:8px 6px; font-size:12.5px; line-height:1.25;
+  border:1px solid var(--line); border-radius:7px; background:transparent; color:var(--ink); cursor:pointer;
+}
+.grid-opts button.sel{background:var(--accent); border-color:var(--accent); color:#fff}
+select,textarea{
+  width:100%; font:inherit; color:var(--ink); background:var(--panel);
+  border:1px solid var(--line); border-radius:8px; padding:10px; margin-bottom:10px;
+}
+textarea{min-height:96px; resize:vertical}
+.rank{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+.rank span{font-size:13px; color:var(--muted); width:28px; flex:none}
+.nav{display:flex; gap:10px; margin-top:18px}
+button.go{
+  flex:1; padding:13px; font-size:16px; font-weight:600; border-radius:9px; cursor:pointer;
+  background:var(--accent); color:#fff; border:1px solid var(--accent);
+}
+button.back{flex:0 0 96px; background:transparent; color:var(--muted); border:1px solid var(--line)}
+button.go:disabled{opacity:.5; cursor:not-allowed}
+.langbtn{
+  display:block; width:100%; text-align:left; padding:16px; margin-bottom:10px; font:inherit;
+  border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); color:var(--ink); cursor:pointer;
+}
+.langbtn:hover{border-color:var(--accent); background:var(--accent-soft)}
+.langbtn b{display:block; font-size:18px; margin-bottom:2px}
+.langbtn small{color:var(--muted)}
+.note{font-size:13.5px; color:var(--warn); margin:8px 0 12px}
+.warnbox{border:1px solid var(--line); border-left:3px solid var(--warn); border-radius:6px; padding:10px 12px; font-size:13.5px; color:var(--muted); margin-bottom:14px}
+.done{text-align:center; padding:40px 10px}
+.done .tick{font-size:40px; color:var(--ok); margin-bottom:10px}
+.small{font-size:13px; color:var(--muted)}
+.err{color:#b3261e; font-size:13.5px}
+@media (max-width:480px){ h1{font-size:20px} .card{padding:15px 14px 4px} }
+</style>
+</head>
+<body>
+<header class="bar" id="bar" hidden>
+  <div class="barin">
+    <div class="org" id="orgline"></div>
+    <button id="langswitch" style="background:none;border:1px solid var(--line);border-radius:6px;color:var(--muted);font:inherit;font-size:12px;padding:4px 9px;cursor:pointer"></button>
+  </div>
+  <div class="barin"><div class="progwrap" style="flex:1"><div class="prog" id="prog"></div></div></div>
+</header>
+
+<div class="wrap" id="app"></div>
+
+<!-- honeypot: never shown to humans, never focusable; a filled value marks a bot -->
+<div aria-hidden="true" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">
+  <label>Website<input id="hp-field" type="text" tabindex="-1" autocomplete="off"></label>
+</div>
+
+<script>
+/* ===================== CONTENT ===================== */
+const T = {
+  org:{ru:"Атырауский университет имени Х. Досмухамедова",kz:"Х. Досмұхамедов атындағы Атырау университеті",en:"Kh. Dosmukhamedov Atyrau University"},
+  title:{ru:"Требования устойчивого развития и подготовка специалистов: опрос организаций Атырауской области",kz:"Тұрақты даму талаптары және мамандарды даярлау: Атырау облысы ұйымдарына арналған сауалнама",en:"Sustainability requirements and specialist training: a survey of organisations in Atyrau region"},
+  next:{ru:"Далее",kz:"Әрі қарай",en:"Next"},
+  back:{ru:"Назад",kz:"Артқа",en:"Back"},
+  submit:{ru:"Отправить ответы",kz:"Жауаптарды жіберу",en:"Submit responses"},
+  sending:{ru:"Отправка…",kz:"Жіберілуде…",en:"Sending…"},
+  maxsel:{ru:"Отмечено максимум вариантов",kz:"Барынша көп нұсқа белгіленді",en:"Maximum options selected"},
+  locknote:{ru:"К предыдущим вопросам вернуться нельзя — это часть методики.",kz:"Алдыңғы сұрақтарға оралуға болмайды — бұл әдістеменің бөлігі.",en:"You cannot return to earlier questions — this is part of the method."},
+  dk:{ru:"Затрудняюсь ответить",kz:"Жауап беруге қиналамын",en:"Don't know"},
+  scLo:{ru:"совсем нет",kz:"мүлдем емес",en:"not at all"},
+  scHi:{ru:"в полной мере",kz:"толық шамада",en:"fully"},
+  gA:{ru:"Никогда не слышал",kz:"Ешқашан естімегенмін",en:"Never heard of it"},
+  gB:{ru:"Слышал, но не объясню",kz:"Естігенмін, түсіндіре алмаймын",en:"Heard, cannot explain"},
+  gC:{ru:"Смогу объяснить",kz:"Түсіндіре аламын",en:"Could explain it"},
+  thanks:{ru:"Спасибо за участие",kz:"Қатысқаныңыз үшін рақмет",en:"Thank you for taking part"},
+  thanksSub:{ru:"Ваши ответы записаны анонимно и будут использованы только в обобщённом виде.",kz:"Жауаптарыңыз анонимді түрде жазылды және тек жиынтық түрде пайдаланылады.",en:"Your responses have been recorded anonymously and will be used in aggregate only."},
+  saveFail:{ru:"Ответы не удалось записать на сервер. Сохраните их файлом и передайте организаторам.",kz:"Жауаптарды серверге жазу мүмкін болмады. Оларды файл ретінде сақтап, ұйымдастырушыларға беріңіз.",en:"Responses could not be saved to the server. Save them as a file and pass them to the organisers."},
+  saveFile:{ru:"Сохранить файл с ответами",kz:"Жауаптары бар файлды сақтау",en:"Save a file with the responses"},
+  langTitle:{ru:"Выберите язык",kz:"Тілді таңдаңыз",en:"Choose a language"},
+  previewBanner:{ru:"Режим проверки. Ответы не записываются. Это копия для согласования перед публикацией на сайте университета.",
+                 kz:"Тексеру режимі. Жауаптар жазылмайды. Бұл университет сайтында жарияланғанға дейінгі келісуге арналған көшірме.",
+                 en:"Review mode. No responses are recorded. This is a copy for sign-off before deployment on the university site."},
+  previewDone:{ru:"Это была проверочная версия — ответы не сохранены.",
+               kz:"Бұл тексеру нұсқасы болды — жауаптар сақталмады.",
+               en:"This was the review version — no responses were saved."}
+};
+
+const CONSENT = {
+  ru:{h:"Об опросе",b:[
+    "Атырауский университет имени Х. Досмухамедова изучает, какие требования в области устойчивого развития предъявляются к организациям Атырауской области и какая подготовка специалистов для этого нужна.",
+    "Опрос занимает около 8 минут и заполняется от имени организации. Персональные данные не запрашиваются. Название организации и контактное лицо указываются только по желанию — в последнем вопросе, если Вы хотите, чтобы с Вами связались о сотрудничестве.",
+    "Ответы используются в обобщённом виде — для разработки учебной программы и для международной заявки на финансирование. Продолжая, Вы подтверждаете согласие на участие."]},
+  kz:{h:"Сауалнама туралы",b:[
+    "Х. Досмұхамедов атындағы Атырау университеті Атырау облысының ұйымдарына тұрақты даму саласында қандай талаптар қойылатынын және ол үшін мамандарды қалай даярлау керектігін зерттеп жатыр.",
+    "Сауалнама шамамен 8 минут алады және ұйым атынан толтырылады. Дербес деректер сұралмайды. Ұйымның атауы мен байланыс адамы тек қалауыңыз бойынша — соңғы сұрақта, егер Сізбен ынтымақтастық туралы байланысқанын қаласаңыз — көрсетіледі.",
+    "Жауаптар жиынтық түрде — оқу бағдарламасын әзірлеу және халықаралық қаржыландыру өтінімі үшін пайдаланылады. Жалғастыра отырып, Сіз қатысуға келісіміңізді растайсыз."]},
+  en:{h:"About the survey",b:[
+    "Kh. Dosmukhamedov Atyrau University is studying what sustainability requirements are placed on organisations in Atyrau region, and what specialist training is needed to meet them.",
+    "The survey takes about 8 minutes and is completed on behalf of an organisation. No personal data is requested. The organisation's name and a contact person are given only if you wish — in the final question, if you would like to be contacted about cooperation.",
+    "Responses are used in aggregate, to design a course and to support an international funding application. By continuing you confirm your consent to participate."]}
+};
+
+const P = (ru,kz,en)=>({ru,kz,en});
+
+const SCREENS = [
+ {block:P("Блок 1. Об организации","1-блок. Ұйым туралы","Block 1. About the organisation"), qs:[
+  {id:"b1",type:"single",t:P("Тип организации","Ұйым түрі","Type of organisation"),o:[
+   P("Нефтегазовая компания или оператор","Мұнай-газ компаниясы немесе оператор","Oil and gas company or operator"),
+   P("Подрядчик или поставщик услуг для отрасли","Сала үшін мердігер немесе қызмет жеткізуші","Contractor or service provider to the industry"),
+   P("Обрабатывающая промышленность, иное производство","Өңдеу өнеркәсібі, өзге өндіріс","Manufacturing, other production"),
+   P("Финансовый сектор, банк, страхование","Қаржы секторы, банк, сақтандыру","Financial sector, bank, insurance"),
+   P("Государственный орган, местный исполнительный орган","Мемлекеттік орган, жергілікті атқарушы орган","Public body, local executive authority"),
+   P("НПО, отраслевая ассоциация, палата предпринимателей","ҮЕҰ, салалық қауымдастық, кәсіпкерлер палатасы","NGO, industry association, chamber of entrepreneurs"),
+   P("Иное","Өзге","Other")]},
+  {id:"b2",type:"single",t:P("Численность персонала","Қызметкерлер саны","Number of employees"),o:[
+   P("до 50","50-ге дейін","under 50"),P("50–250","50–250","50–250"),
+   P("250–1000","250–1000","250–1000"),P("более 1000","1000-нан астам","over 1000")]},
+  {id:"b3",type:"single",t:P("Работает ли Ваша организация с иностранными покупателями, инвесторами, банками или головной компанией за рубежом?","Ұйымыңыз шетелдік сатып алушылармен, инвесторлармен, банктермен немесе шетелдегі бас компаниямен жұмыс істей ме?","Does your organisation work with foreign buyers, investors, banks or a foreign parent company?"),o:[
+   P("Да, в том числе со странами ЕС","Иә, оның ішінде ЕО елдерімен","Yes, including EU countries"),
+   P("Да, но не со странами ЕС","Иә, бірақ ЕО елдерімен емес","Yes, but not with EU countries"),
+   P("Нет","Жоқ","No")]}
+ ]},
+
+ {block:P("Блок 2. Внешние требования","2-блок. Сыртқы талаптар","Block 2. External requirements"), qs:[
+  {id:"b4",type:"single",t:P("За последние два года запрашивали ли у Вашей организации данные о воздействии на окружающую среду, охране труда, углеродном следе или корпоративном управлении — покупатель, инвестор, банк, головная компания или государственный орган?","Соңғы екі жылда ұйымыңыздан қоршаған ортаға әсер, еңбек қауіпсіздігі, көміртек ізі немесе корпоративтік басқару бойынша деректерді сатып алушы, инвестор, банк, бас компания немесе мемлекеттік орган сұратты ма?","In the past two years, has a buyer, investor, bank, parent company or public body requested environmental, safety, carbon or governance data from your organisation?"),o:[
+   P("Да, регулярно","Иә, тұрақты түрде","Yes, regularly"),
+   P("Да, единично","Иә, бір-екі рет","Yes, on isolated occasions"),
+   P("Нет","Жоқ","No"),
+   P("Не знаю","Білмеймін","Don't know")]},
+  {id:"b5",type:"single",t:P("Относится ли Ваша организация к участникам системы квотирования выбросов парниковых газов, либо обязана ли она отчитываться о выбросах?","Ұйымыңыз парниктік газдар шығарындыларын квоталау жүйесінің қатысушысы ма, әлде шығарындылар туралы есеп беруге міндетті ме?","Is your organisation covered by the greenhouse gas quota system, or obliged to report emissions?"),o:[
+   P("Да, получаем квоты","Иә, квота аламыз","Yes, we hold quotas"),
+   P("Да, только отчитываемся о выбросах","Иә, тек шығарындылар туралы есеп береміз","Yes, we only report emissions"),
+   P("Нет","Жоқ","No"),
+   P("Не знаю","Білмеймін","Don't know")]},
+  {id:"b5a",type:"single",t:P("Подпадает ли продукция Вашей организации — напрямую или через заказчика-экспортёра — под действие трансграничного углеродного механизма ЕС (CBAM)?","Ұйымыңыздың өнімі — тікелей немесе экспорттаушы тапсырыс беруші арқылы — ЕО-ның трансшекаралық көміртек тетігінің (CBAM) қолданысына жата ма?","Do your organisation's goods fall under the EU carbon border adjustment mechanism (CBAM), directly or through an exporting client?"),o:[
+   P("Да, мы экспортируем такие товары в ЕС","Иә, біз ЕО-ға осындай тауарларды экспорттаймыз","Yes, we export such goods to the EU"),
+   P("Да, через заказчика-экспортёра","Иә, экспорттаушы тапсырыс беруші арқылы","Yes, through an exporting client"),
+   P("Нет","Жоқ","No"),
+   P("Не знаю","Білмеймін","Don't know")]},
+  {id:"b6",type:"single",t:P("Предъявлялись ли к Вашей организации экологические или социальные требования как условие финансирования либо в договорах с крупным оператором?","Ұйымыңызға қаржыландыру шарты ретінде немесе ірі оператормен жасалған шарттарда экологиялық не әлеуметтік талаптар қойылды ма?","Has your organisation faced environmental or social requirements as a financing condition, or in contracts with a major operator?"),o:[
+   P("Да, со стороны банка или международного финансового института","Иә, банк немесе халықаралық қаржы институты тарапынан","Yes, from a bank or international financial institution"),
+   P("Да, в договорах с крупным оператором или заказчиком","Иә, ірі оператормен немесе тапсырыс берушімен жасалған шарттарда","Yes, in contracts with a major operator or client"),
+   P("Да, и то и другое","Иә, екеуі де","Yes, both"),
+   P("Нет","Жоқ","No"),
+   P("Не знаю","Білмеймін","Don't know")]}
+ ]},
+
+ {block:P("Блок 3. Компетенции","3-блок. Құзыреттер","Block 3. Competences"), qs:[
+  {id:"b7",type:"single",t:P("Есть ли в организации сотрудник или подразделение, отвечающее за устойчивое развитие, ESG или нефинансовую отчётность?","Ұйымда тұрақты даму, ESG немесе қаржылық емес есептілікке жауапты қызметкер немесе бөлімше бар ма?","Does your organisation have staff or a unit responsible for sustainability, ESG or non-financial reporting?"),o:[
+   P("Да, отдельное подразделение","Иә, жеке бөлімше","Yes, a dedicated unit"),
+   P("Да, совмещено с другой функцией","Иә, басқа қызметпен қоса атқарылады","Yes, combined with another function"),
+   P("Нет, но планируется","Жоқ, бірақ жоспарлануда","No, but planned"),
+   P("Нет и не планируется","Жоқ және жоспарланбайды","No, and not planned")]},
+  {id:"b8",type:"single",t:P("Где эти сотрудники получали подготовку?","Бұл қызметкерлер дайындықты қайда алды?","Where did such staff obtain their training?"),o:[
+   P("Внутреннее обучение","Ішкі оқыту","In-house training"),
+   P("Зарубежные курсы и провайдеры","Шетелдік курстар мен провайдерлер","Foreign courses and providers"),
+   P("Казахстанские университеты","Қазақстандық университеттер","Kazakhstani universities"),
+   P("Самостоятельно","Өз бетінше","Self-taught"),
+   P("Подготовки не было","Дайындық болмаған","No training")]},
+  {id:"b9",type:"single",t:P("Если такая подготовка понадобится Вашей организации в ближайшие два года, куда Вы обратитесь?","Егер мұндай дайындық ұйымыңызға жақын екі жылда қажет болса, қайда жүгінесіз?","If your organisation needed such training in the next two years, where would you turn?"),o:[
+   P("Международный провайдер или консалтинговая компания","Халықаралық провайдер немесе консалтинг компаниясы","International provider or consultancy"),
+   P("Казахстанский университет","Қазақстандық университет","A Kazakhstani university"),
+   P("Обучение внутри компании","Компания ішінде оқыту","In-house training"),
+   P("Не будем обучать никого","Ешкімді оқытпаймыз","We would not train anyone"),
+   P("Затрудняюсь ответить","Жауап беруге қиналамын","Don't know")]},
+  {id:"b10",type:"scale",t:P("Насколько сложно найти на региональном рынке труда специалиста с такими компетенциями?","Өңірлік еңбек нарығынан осындай құзыреті бар маманды табу қаншалықты қиын?","How difficult is it to find a specialist with such competences in the regional labour market?")}
+ ]},
+
+ {block:P("Блок 4. Спрос на обучение","4-блок. Оқуға деген сұраныс","Block 4. Demand for training"), qs:[
+  {id:"b11",type:"scale",t:P("Насколько вероятно, что Ваша организация направила бы сотрудников на такой модуль в Атырауском университете?","Ұйымыңыз Атырау университетіндегі осындай модульге қызметкерлерін жіберуі қаншалықты ықтимал?","How likely is it that your organisation would send employees to such a module at Atyrau University?")},
+  {id:"b12",type:"single",t:P("Сколько сотрудников в год Вы могли бы направить?","Жылына қанша қызметкер жібере алар едіңіз?","How many employees a year could you send?"),o:[
+   P("0","0","0"),P("1–3","1–3","1–3"),P("4–10","4–10","4–10"),
+   P("более 10","10-нан астам","more than 10")]},
+  {id:"b13",type:"multi",max:4,t:P("Какие темы наиболее востребованы в Вашей организации? До четырёх вариантов.","Ұйымыңызда қандай тақырыптар ең қажет? Төртеуге дейін.","Which topics are most needed in your organisation? Up to four."),o:[
+   P("Как принимаются решения в ЕС и как они доходят до наших контрагентов","ЕО-да шешімдер қалай қабылданады және олар контрагенттерімізге қалай жетеді","How EU decisions are taken and how they reach our counterparties"),
+   P("Требования ЕС: CSRD, CSDDD, таксономия и их пересмотр","ЕО талаптары: CSRD, CSDDD, таксономия және олардың қайта қаралуы","EU requirements: CSRD, CSDDD, taxonomy and their revision"),
+   P("Углеродный учёт и углеродное регулирование ЕС","Көміртекті есепке алу және ЕО-ның көміртекті реттеуі","Carbon accounting and EU carbon regulation"),
+   P("Нефинансовая отчётность и её стандарты","Қаржылық емес есептілік және оның стандарттары","Non-financial reporting and its standards"),
+   P("Привлечение зелёного финансирования","Жасыл қаржыландыруды тарту","Raising green finance"),
+   P("Корпоративное управление, работа совета директоров","Корпоративтік басқару, директорлар кеңесінің жұмысы","Corporate governance and board practice"),
+   P("Управление ESG-рисками и комплаенс","ESG-тәуекелдерді басқару және комплаенс","ESG risk management and compliance")]}
+ ]},
+
+ {block:P("Блок 5. Сотрудничество","5-блок. Ынтымақтастық","Block 5. Cooperation"), qs:[
+  {id:"b14",type:"single",t:P("Публикует ли Ваша организация отчёт об устойчивом развитии?","Ұйымыңыз тұрақты даму туралы есеп жариялай ма?","Does your organisation publish a sustainability report?"),o:[
+   P("Да, по международному стандарту","Иә, халықаралық стандарт бойынша","Yes, to an international standard"),
+   P("Да, в свободной форме","Иә, еркін нысанда","Yes, in free form"),
+   P("Нет","Жоқ","No"),
+   P("Не знаю","Білмеймін","Don't know")]},
+  {id:"b15",type:"multi",max:6,t:P("Готова ли Ваша организация участвовать в образовательном проекте?","Ұйымыңыз білім беру жобасына қатысуға дайын ба?","Would your organisation take part in an educational project?"),o:[
+   P("Принять студентов на практику","Студенттерді тәжірибеге қабылдау","Host students for placements"),
+   P("Предоставить данные для учебных кейсов","Оқу кейстері үшін деректер беру","Provide data for teaching cases"),
+   P("Выступить с гостевой лекцией","Қонақ дәрісін оқу","Deliver a guest lecture"),
+   P("Участвовать в круглых столах","Дөңгелек үстелдерге қатысу","Take part in round tables"),
+   P("Предоставить письмо поддержки проекту","Жобаға қолдау хатын беру","Provide a letter of support"),
+   P("Не готовы","Дайын емеспіз","Not willing")]},
+  {id:"b16",type:"text",t:P("Если Вы отметили любой из вариантов сотрудничества — укажите организацию и контактное лицо. Заполняется только по желанию; без этого ответы остаются анонимными.","Егер ынтымақтастық нұсқаларының кез келгенін белгілесеңіз — ұйымды және байланыс адамын көрсетіңіз. Тек қалауыңыз бойынша толтырылады; онсыз жауаптар анонимді болып қалады.","If you selected any form of cooperation, please give the organisation and a contact person. Optional; without it your responses remain anonymous.")}
+ ]}
+];
+
+/* ===================== CONFIG =====================
+   Set these two before deploying to your own hosting.
+   ENDPOINT: the Apps Script web app URL (ends with /exec)
+   SECRET:   the same string as SECRET in Code.gs           */
+const CONFIG = {
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbyrDGPE3QVhmQOgmfFdLq0Ge5a_HotcXAeCQJGZJ_oMvLP9vUw07LeC7n8IWhzlJq8/exec",
+  SECRET:   "BELGIUM2026",
+  VERSION:  "web-B-1.0"
+};
+/* On claude.ai the page runs in review mode: no network call is made,
+   and no response is recorded. On your own hosting it posts to ENDPOINT. */
+const PREVIEW = /(^|\.)claude\.ai$/.test(location.hostname)
+             || CONFIG.ENDPOINT.indexOf("PASTE_") === 0;
+
+/* ===================== STATE ===================== */
+let lang = null, step = -1, minStep = 0, submitted = false;
+const A = {};                       // answers
+const started = new Date().toISOString();
+const startedMs = Date.now();
+const app = document.getElementById('app');
+const bar = document.getElementById('bar');
+const L = (o)=> o && (o[lang] || o.ru || '');
+
+/* ===================== RENDER ===================== */
+function render(){
+  window.scrollTo(0,0);
+  if(step === -1){ renderLang(); return; }
+  bar.hidden = false;
+  document.getElementById('orgline').textContent = L(T.org);
+  const sw = document.getElementById('langswitch');
+  sw.textContent = {ru:'ҚАЗ / ENG',kz:'РУС / ENG',en:'ҚАЗ / РУС'}[lang];
+  sw.onclick = ()=>{ if(confirm({ru:'Сменить язык? Ответы сохранятся.',kz:'Тілді ауыстыру керек пе? Жауаптар сақталады.',en:'Change language? Answers are kept.'}[lang])){ step=-1; render(); } };
+  document.getElementById('prog').style.width = Math.round((step/(SCREENS.length+1))*100)+'%';
+  if(step === 0){ renderConsent(); return; }
+  if(step > SCREENS.length){ renderDone(); return; }
+  renderScreen(SCREENS[step-1]);
+}
+
+function renderLang(){
+  bar.hidden = true;
+  app.innerHTML = '';
+  const h = el('h1', 'Сауалнама · Опрос · Survey');
+  const p = el('p','Атырау университеті · Атырауский университет'); p.className='lead';
+  app.append(h,p);
+  const opts = [
+    {code:'kz', name:'Қазақша', sub:'Сауалнаманы қазақ тілінде толтыру'},
+    {code:'ru', name:'Русский', sub:'Пройти опрос на русском языке'},
+    {code:'en', name:'English', sub:'Take the survey in English'}
+  ];
+  const box = el('div'); box.style.marginTop='18px';
+  opts.forEach(o=>{
+    const b = document.createElement('button');
+    b.className='langbtn';
+    b.innerHTML = '<b></b><small></small>';
+    b.querySelector('b').textContent = o.name;
+    b.querySelector('small').textContent = o.sub;
+    b.onclick = ()=>{ lang=o.code; document.documentElement.lang=o.code; if(step===-1) step=0; render(); };
+    box.append(b);
+  });
+  app.append(box);
+  const n = el('p','~12 min · анонимно · анонимді · anonymous'); n.className='small'; n.style.marginTop='18px';
+  app.append(n);
+}
+
+function renderConsent(){
+  app.innerHTML='';
+  app.append(el('h1', L(T.title)));
+  if(PREVIEW){ const w=el('div', L(T.previewBanner)); w.className='warnbox'; app.append(w); }
+  const c = el('div'); c.className='card';
+  c.append(el('h2', L(CONSENT[lang] ? {ru:CONSENT.ru.h,kz:CONSENT.kz.h,en:CONSENT.en.h} : {})));
+  CONSENT[lang].b.forEach(t=> c.append(el('p',t)));
+  app.append(c);
+  nav(false);
+}
+
+function renderScreen(sc){
+  app.innerHTML='';
+  app.append(el('h2', L(sc.block)));
+  if(sc.intro){ const w=el('div'); w.className='warnbox'; w.textContent=L(sc.intro); app.append(w); }
+  if(sc.lock){ const w=el('div'); w.className='note'; w.textContent=L(T.locknote); app.append(w); }
+  sc.qs.forEach(q=> app.append(qcard(q)));
+  nav(!!sc.lock || step<=minStep);
+}
+
+function qcard(q){
+  const c = el('div'); c.className='card';
+  const n = el('div', q.id.replace(/^q/,'').replace('_','.')); n.className='qnum';
+  const t = el('div', L(q.t)); t.className='qtext';
+  c.append(n,t);
+  if(q.hint){ const h=el('div',L(q.hint)); h.className='hint'; c.append(h); }
+  if(q.type==='single' || q.type==='multi') c.append(optList(q));
+  if(q.type==='scale') c.append(scaleWidget(q));
+  if(q.type==='grid') c.append(gridWidget(q));
+  if(q.type==='rank3') c.append(rankWidget(q));
+  if(q.type==='text') c.append(textWidget(q));
+  return c;
+}
+
+function optList(q){
+  const box = el('div');
+  const multi = q.type==='multi';
+  if(multi) A[q.id] = A[q.id] || [];
+  q.o.forEach((op,i)=>{
+    const lab = document.createElement('label'); lab.className='opt';
+    const inp = document.createElement('input');
+    inp.type = multi?'checkbox':'radio'; inp.name=q.id;
+    const val = i+1;
+    inp.checked = multi ? A[q.id].includes(val) : A[q.id]===val;
+    if(inp.checked) lab.classList.add('sel');
+    inp.onchange = ()=>{
+      if(multi){
+        const cur = A[q.id];
+        if(inp.checked){
+          if(q.max && cur.length>=q.max){ inp.checked=false; flash(box, L(T.maxsel)+' ('+q.max+')'); return; }
+          cur.push(val);
+        } else { A[q.id]=cur.filter(v=>v!==val); }
+      } else { A[q.id]=val; }
+      [...box.querySelectorAll('label.opt')].forEach(l=> l.classList.toggle('sel', l.querySelector('input').checked));
+    };
+    const sp = el('span', L(op));
+    lab.append(inp, sp); box.append(lab);
+  });
+  return box;
+}
+
+function scaleWidget(q){
+  const box = el('div');
+  const row = el('div'); row.className='scale';
+  const mk=(v,label,cls)=>{
+    const b=document.createElement('button'); b.type='button'; b.textContent=label;
+    if(cls) b.className=cls;
+    if(A[q.id]===v) b.classList.add('sel');
+    b.onclick=()=>{ A[q.id]=v; [...row.children].forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); };
+    return b;
+  };
+  [1,2,3,4,5].forEach(v=> row.append(mk(v,String(v))));
+  row.append(mk(0, L(T.dk), 'dk'));
+  const ends = el('div'); ends.className='ends';
+  ends.append(el('span','1 — '+L(T.scLo)), el('span','5 — '+L(T.scHi)));
+  box.append(row, ends);
+  return box;
+}
+
+function gridWidget(q){
+  const box = el('div');
+  A[q.id] = A[q.id] || {};
+  q.rows.forEach(r=>{
+    const w = el('div'); w.className='grid-row';
+    const lb = el('div', L(r.t)); lb.className='lbl';
+    const opts = el('div'); opts.className='grid-opts';
+    [['A',T.gA],['B',T.gB],['C',T.gC]].forEach(([code,txt])=>{
+      const b=document.createElement('button'); b.type='button'; b.textContent=L(txt);
+      if(A[q.id][r.k]===code) b.classList.add('sel');
+      b.onclick=()=>{ A[q.id][r.k]=code; [...opts.children].forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); };
+      opts.append(b);
+    });
+    w.append(lb,opts); box.append(w);
+  });
+  return box;
+}
+
+function rankWidget(q){
+  const box = el('div');
+  A[q.id] = A[q.id] || [null,null,null];
+  for(let i=0;i<3;i++){
+    const row = el('div'); row.className='rank';
+    row.append(el('span',(i+1)+'.'));
+    const s=document.createElement('select');
+    const blank=document.createElement('option'); blank.value=''; blank.textContent='—'; s.append(blank);
+    q.o.forEach((op,j)=>{ const o=document.createElement('option'); o.value=String(j+1); o.textContent=L(op); s.append(o); });
+    s.value = A[q.id][i] ? String(A[q.id][i]) : '';
+    s.onchange = ()=>{ A[q.id][i] = s.value ? Number(s.value) : null; };
+    row.append(s); box.append(row);
+  }
+  return box;
+}
+
+function textWidget(q){
+  const ta=document.createElement('textarea');
+  ta.value = A[q.id]||'';
+  ta.oninput = ()=>{ A[q.id]=ta.value; };
+  return ta;
+}
+
+function nav(noBack){
+  const n = el('div'); n.className='nav';
+  if(!noBack && step>0){
+    const b=document.createElement('button'); b.className='go back'; b.textContent=L(T.back);
+    b.onclick=()=>{ step=Math.max(minStep,step-1); render(); };
+    n.append(b);
+  }
+  const g=document.createElement('button'); g.className='go';
+  const last = step===SCREENS.length;
+  g.textContent = last ? L(T.submit) : L(T.next);
+  g.onclick = ()=>{
+    const sc = SCREENS[step-1];
+    if(sc && sc.lock) minStep = step+1;
+    if(last){ submit(g); return; }
+    step++; render();
+  };
+  n.append(g);
+  app.append(n);
+}
+
+function renderDone(){
+  app.innerHTML='';
+  const d=el('div'); d.className='done';
+  d.append(el('div','✓')); d.firstChild.className='tick';
+  d.append(el('h1', L(T.thanks)));
+  const p=el('p', PREVIEW ? L(T.previewDone) : (submitted ? L(T.thanksSub) : L(T.saveFail))); p.className='lead';
+  d.append(p);
+  if(!submitted && !PREVIEW){
+    const b=document.createElement('button'); b.className='go'; b.style.maxWidth='320px'; b.style.margin='12px auto';
+    b.textContent=L(T.saveFile);
+    b.onclick=()=>saveFile();
+    d.append(b);
+  }
+  app.append(d);
+  document.getElementById('prog').style.width='100%';
+}
+
+/* ===================== SUBMIT ===================== */
+/* Flatten answers into one row, per the codebook:
+   single  -> option index (1..n)
+   multi   -> one binary column per option: q__oN = 0/1
+   grid    -> one column per row key: q__key = A|B|C
+   rank3   -> three columns: q__1, q__2, q__3 = option index
+   scale   -> 1..5, or 0 for "don't know"
+   text    -> raw string                                        */
+function flatten(){
+  const row = {};
+  SCREENS.forEach(sc=> sc.qs.forEach(q=>{
+    const v = A[q.id];
+    if(q.type==='single' || q.type==='scale'){ row[q.id] = (v==null? '' : v); }
+    else if(q.type==='multi'){ q.o.forEach((_,i)=>{ row[q.id+'__o'+(i+1)] = (v&&v.includes(i+1))?1:0; }); }
+    else if(q.type==='grid'){ q.rows.forEach(r=>{ row[q.id+'__'+r.k] = (v&&v[r.k])||''; }); }
+    else if(q.type==='rank3'){ for(let i=0;i<3;i++) row[q.id+'__'+(i+1)] = (v&&v[i])||''; }
+    else if(q.type==='text'){ row[q.id] = (v||'').trim(); }
+  }));
+  return row;
+}
+
+function payload(){
+  return {
+    secret: CONFIG.SECRET,
+    meta: {
+      lang, started, finished:new Date().toISOString(),
+      elapsed_s: Math.round((Date.now()-startedMs)/1000),
+      ua_lang:(navigator.language||''),
+      screen_w: window.innerWidth,
+      instrument:"B", version:CONFIG.VERSION
+    },
+    row: flatten()
+  };
+}
+
+async function submit(btn){
+  btn.disabled=true; btn.textContent=L(T.sending);
+
+  /* honeypot: filled means a bot; elapsed guard: under 45s means not a real pass */
+  const hp = document.getElementById('hp-field');
+  const tooFast = (Date.now()-startedMs) < 45000;
+  if((hp && hp.value) || tooFast){ submitted = PREVIEW; step=SCREENS.length+1; render(); return; }
+
+  if(PREVIEW){ submitted = true; step=SCREENS.length+1; render(); return; }
+
+  try{
+    const res = await fetch(CONFIG.ENDPOINT, {
+      method:'POST', mode:'cors', redirect:'follow',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},   // avoids CORS preflight
+      body: JSON.stringify(payload())
+    });
+    const out = await res.json();
+    submitted = !!(out && out.ok);
+  }catch(e){ submitted = false; }
+
+  if(!submitted){ try{ localStorage.setItem('pending_'+Date.now(), JSON.stringify(payload())); }catch(e){} }
+  step = SCREENS.length+1;
+  render();
+}
+
+async function saveFile(){
+  const data = JSON.stringify(payload(), null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'survey-response-'+Date.now()+'.json';
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ===================== UTIL ===================== */
+function el(tag, text){ const e=document.createElement(tag); if(text!=null) e.textContent=text; return e; }
+function flash(node,msg){
+  let w=node.querySelector('.err');
+  if(!w){ w=el('div',''); w.className='err'; node.append(w); }
+  w.textContent=msg; setTimeout(()=>{ if(w) w.textContent=''; },2200);
+}
+
+render();
+</script>
+</body>
+</html>
